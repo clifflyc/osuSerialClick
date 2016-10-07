@@ -15,30 +15,71 @@
 #include <Windows.h>
 using namespace std;
 
-// Press/Release a keyboard key depending on char passed as parameter
-void click(char receivedChar){
-    INPUT Input= {0};
-    Input.type=INPUT_KEYBOARD;
-    if(receivedChar=='z'){
-        Input.ki.wVk=0x5A;//press z
-        Input.ki.dwFlags=0;
-    }else if(receivedChar=='x'){
-        Input.ki.wVk=0x58;//press x
-        Input.ki.dwFlags=0;
-    }else if(receivedChar=='a'){
-        Input.ki.wVk=0x5A;//press z
-        Input.ki.dwFlags=KEYEVENTF_KEYUP;
-    }else{
-        Input.ki.wVk=0x58;//press x
-        Input.ki.dwFlags=KEYEVENTF_KEYUP;
+string configFileName= "click - bindings.txt";
+char key1press='z';
+char key1release='a';
+char key2press='x';
+char key2release='s';
+char quitChar='q';
+INPUT k1={0},k1r={0},k2={0},k2r={0};
+
+
+void setChar(string line, char &keyChar){
+
+}
+
+void doSetup(){
+    //read/create config file
+    fstream configFile;
+    configFile.open(configFileName.c_str());
+    if (configFile.is_open()){
+        
+    } else {
+        cout << "Could not open config file, trying to create one...";
+                
     }
-    ::SendInput(1,&Input,sizeof(INPUT));
+    
+    
+    
+    //instantiate and set all the input signals
+    k1.type=INPUT_KEYBOARD;
+    k1.ki.wVk=0x5A;
+    k1.ki.dwFlags=0;
+        
+    k2.type=INPUT_KEYBOARD;
+    k2.ki.wVk=0x58;
+    k2.ki.dwFlags=0;
+   
+    k1r.type=INPUT_KEYBOARD;
+    k1r.ki.wVk=0x5A;//release key 1
+    k1r.ki.dwFlags=KEYEVENTF_KEYUP;
+    
+    k2r.type=INPUT_KEYBOARD;
+    k2r.ki.wVk=0x58;//release key 2
+    k2r.ki.dwFlags=KEYEVENTF_KEYUP;
+}
+
+// send key signal to Press/Release a keyboard key depending on char passed as parameter
+void click(char receivedChar){
+    if(receivedChar==key1press){
+        ::SendInput(1,&k1,sizeof(INPUT));
+    }else if(receivedChar==key2press){
+        ::SendInput(1,&k2,sizeof(INPUT));
+    }else if(receivedChar==key1release){
+        ::SendInput(1,&k1r,sizeof(INPUT));
+    }else if(receivedChar==key2release){
+        ::SendInput(1,&k2r,sizeof(INPUT));
+    }
+    
 }
 
 int main(int argc, char** argv) {
     HANDLE handle; //a handle for the connection
     DCB config; //comm state stuff
     DWORD eventMask;
+    
+    doSetup();
+    
     
     handle = CreateFile( "COM6", //name of serial port  
                     GENERIC_READ, //read only
@@ -77,7 +118,7 @@ int main(int argc, char** argv) {
         DWORD readSize;
         int errorCount=0;
         
-        while(buffer!='q'){// keep reading until the char read is the one to quit
+        while(buffer!=quitChar){// keep reading until the char read is the one to quit
             if(ReadFile(handle, &buffer, 1, &readSize, NULL) != 0){
                 if(readSize > 0){
                     click(buffer);
