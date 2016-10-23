@@ -15,7 +15,9 @@
 #include <Windows.h>
 using namespace std;
 
-string configFileName= "click - bindings.txt";
+string configFileName= "click config.txt";
+
+string portname="COM6";
 char key1press='z';
 char key1release='a';
 char key2press='x';
@@ -23,20 +25,35 @@ char key2release='s';
 char quitChar='q';
 INPUT k1={0},k1r={0},k2={0},k2r={0};
 
-
-void setChar(string line, char &keyChar){
-
-}
-
 void doSetup(){
     //read/create config file
     fstream configFile;
     configFile.open(configFileName.c_str());
     if (configFile.is_open()){
-        
+        string line;
+        while(getline(configFile,line)){
+            //correct config line as of is length of 8+ char, comment lines start with "//"
+            if(line.substr(0,2)!="//" && line.length()>=8){
+                string tag = line.substr(0,6); //name of configuration to set
+                string setto = line.substr(7); //value to set to
+                cout << "read: "+ tag+"="+setto << '\n';
+                if(tag=="press1"){
+                    key1press=setto.at(0);;
+                } else if (tag=="rleas1"){
+                    key1release=setto.at(0);;
+                } else if (tag=="press2"){
+                    key2press=setto.at(0);;
+                } else if (tag=="rleas2"){
+                    key2release=setto.at(0);;
+                } else if (tag=="cmport"){ 
+                    portname=setto;
+                } else {
+                    cout << "what is "+ tag+" ?" << '\n';
+                }
+            }
+        }
     } else {
-        cout << "Could not open config file, trying to create one...";
-                
+        cout << "Could not open config file, I would make one for you but that's not a feature. Sorry" << '\n';
     }
     
     
@@ -81,7 +98,7 @@ int main(int argc, char** argv) {
     doSetup();
     
     
-    handle = CreateFile( "COM6", //name of serial port  
+    handle = CreateFile( portname.c_str(), //name of serial port  
                     GENERIC_READ, //read only
                     0, 
                     NULL, 

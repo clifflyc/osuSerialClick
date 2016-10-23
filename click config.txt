@@ -1,0 +1,20 @@
+// #keyboard bindings and config and stuff
+// lines starting with "//" are ignored!
+// lines under 8 char of length are also ignored!
+
+// things are space sensitive (for now?)
+
+//name of serial port to connect to Arduino
+cmport=COM6
+
+//when program recieves this char from serial stream, key1 will be pressed
+press1=z
+//when program recieves this char from serial stream, key1 will be released
+rleas1=a
+//when program recieves this char from serial stream, key2 will be pressed
+press2=x
+//when program recieves this char from serial stream, key2 will be released
+rleas2=s
+
+//this is for debugging purposes (ignore)
+qaqaqa=q
