@@ -1,5 +1,5 @@
-const int read1=11;
-const int read2=12;
+const int read1=8;
+const int read2=9;
 boolean pressed1=false;
 boolean pressed2=false;
 
